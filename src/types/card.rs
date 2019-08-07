@@ -1,3 +1,4 @@
+use super::price::Price;
 use super::uri::Uri;
 use super::uuid::Uuid;
 use serde::Deserialize;
@@ -6,18 +7,28 @@ use std::time::SystemTime;
 
 /// Possible colors that a card can be. Note that cards who do not have a color are not automatically colorless, e.g.
 /// conspiracies.
-#[derive(Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Color {
+    #[serde(rename = "W")]
     White,
+
+    #[serde(rename = "U")]
     Blue,
+
+    #[serde(rename = "B")]
     Black,
+
+    #[serde(rename = "R")]
     Red,
+
+    #[serde(rename = "G")]
     Green,
-    Colorless,
 }
 
 /// The kind of card, e.g. normal / split / etc.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum Layout {
     Normal,
     Split,
@@ -30,14 +41,15 @@ pub enum Layout {
     Scheme,
     Vanguard,
     Token,
-    DoubleFaceToken,
+    DoubleFacedToken,
     Emblem,
     Augment,
     Host,
 }
 
 /// Frame effects that are applied over the primary Frame kinds.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum FrameEffect {
     Legendary,
     Miracle,
@@ -46,24 +58,34 @@ pub enum FrameEffect {
     Devoid,
     Tombstone,
     ColorShifted,
-    SunMoonFc,
-    CompassLandFc,
-    OriginPwdFc,
-    MoonEldraziFc,
+    SunMoonDfc,
+    CompassLandDfc,
+    OriginPwDfc,
+    MoonEldraziDfc,
 }
 
 /// Main Frame kind, e.g. '93, '97, etc.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub enum Frame {
+    #[serde(rename = "1993")]
     Year1993,
+
+    #[serde(rename = "1997")]
     Year1997,
+
+    #[serde(rename = "2003")]
     Year2003,
+
+    #[serde(rename = "2015")]
     Year2015,
+
+    #[serde(rename = "future")]
     Future,
 }
 
 /// The different kinds of MTG this can be played on. E.g. paper MTG, Arena, and MTG online.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Game {
     Paper,
     Arena,
@@ -71,7 +93,8 @@ pub enum Game {
 }
 
 /// Rarity levels that a card can be.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Rarity {
     Common,
     Uncommon,
@@ -80,7 +103,8 @@ pub enum Rarity {
 }
 
 /// The legality status of this card in different formats.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum Legality {
     NotLegal,
     Legal,
@@ -89,7 +113,7 @@ pub enum Legality {
 }
 
 /// Primary card object
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Card {
     /// This card’s Arena ID, if any. A large percentage of cards are not available on Arena and do not have this ID.
     pub arena_id: Option<u32>,
@@ -310,7 +334,7 @@ pub struct Card {
 }
 
 /// Card face object, used within the card object in the card_faces field.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct CardFace {
     /// The name of the illustrator of this card face. Newly spoiled cards may not have this field yet.
     pub artist: Option<String>,
@@ -368,7 +392,7 @@ pub struct CardFace {
 }
 
 /// Related card object, used within the card object in the all_parts field.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct RelatedCard {
     /// An unique ID for this card in Scryfall’s database.
     pub id: Uuid,
@@ -388,7 +412,7 @@ pub struct RelatedCard {
 }
 
 /// Contains legalities for this card in each format.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct Legalities {
     pub standard: Legality,
     pub future: Legality,
@@ -404,7 +428,7 @@ pub struct Legalities {
 }
 
 /// Contains all of the possible URIs for each kind of image Scryfall stores.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct ImageUris {
     pub small: Option<Uri>,
     pub normal: Option<Uri>,
@@ -415,16 +439,16 @@ pub struct ImageUris {
 }
 
 /// Contains prices in different markets for this card.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Prices {
-    pub usd: Option<f64>,
-    pub usb_foil: Option<f64>,
-    pub eur: Option<f64>,
-    pub tix: Option<f64>,
+    pub usd: Option<Price>,
+    pub usd_foil: Option<Price>,
+    pub eur: Option<Price>,
+    pub tix: Option<Price>,
 }
 
 /// Contains URIs to this card on sites where you can purchase this card
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct PurchaseUris {
     pub tcgplayer: Option<Uri>,
     pub cardmarket: Option<Uri>,
@@ -432,9 +456,270 @@ pub struct PurchaseUris {
 }
 
 /// Contains URIs to this card on related sites.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct RelatedUris {
     pub tcgplayer_decks: Option<Uri>,
     pub edhrec: Option<Uri>,
     pub mtgtop8: Option<Uri>,
+}
+
+mod tests {
+    #[test]
+    fn test_color() {
+        use super::Color;
+
+        let color_pairs = vec![
+            ("\"W\"", Color::White),
+            ("\"U\"", Color::Blue),
+            ("\"B\"", Color::Black),
+            ("\"R\"", Color::Red),
+            ("\"G\"", Color::Green),
+        ];
+
+        for color_pair in color_pairs {
+            let val: Color = serde_json::from_str(color_pair.0).unwrap();
+            assert_eq!(color_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_layout() {
+        use super::Layout;
+
+        let layout_pairs = vec![
+            ("\"normal\"", Layout::Normal),
+            ("\"split\"", Layout::Split),
+            ("\"flip\"", Layout::Flip),
+            ("\"transform\"", Layout::Transform),
+            ("\"meld\"", Layout::Meld),
+            ("\"leveler\"", Layout::Leveler),
+            ("\"saga\"", Layout::Saga),
+            ("\"planar\"", Layout::Planar),
+            ("\"scheme\"", Layout::Scheme),
+            ("\"vanguard\"", Layout::Vanguard),
+            ("\"token\"", Layout::Token),
+            ("\"double_faced_token\"", Layout::DoubleFacedToken),
+            ("\"emblem\"", Layout::Emblem),
+            ("\"augment\"", Layout::Augment),
+            ("\"host\"", Layout::Host),
+        ];
+
+        for layout_pair in layout_pairs {
+            let val: Layout = serde_json::from_str(layout_pair.0).unwrap();
+            assert_eq!(layout_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_frame_effect() {
+        use super::FrameEffect;
+
+        let frame_effect_pairs = vec![
+            ("\"legendary\"", FrameEffect::Legendary),
+            ("\"miracle\"", FrameEffect::Miracle),
+            ("\"nyxtouched\"", FrameEffect::NyxTouched),
+            ("\"draft\"", FrameEffect::Draft),
+            ("\"devoid\"", FrameEffect::Devoid),
+            ("\"tombstone\"", FrameEffect::Tombstone),
+            ("\"colorshifted\"", FrameEffect::ColorShifted),
+            ("\"sunmoondfc\"", FrameEffect::SunMoonDfc),
+            ("\"compasslanddfc\"", FrameEffect::CompassLandDfc),
+            ("\"originpwdfc\"", FrameEffect::OriginPwDfc),
+            ("\"mooneldrazidfc\"", FrameEffect::MoonEldraziDfc),
+        ];
+
+        for frame_effect_pair in frame_effect_pairs {
+            let val: FrameEffect = serde_json::from_str(frame_effect_pair.0).unwrap();
+            assert_eq!(frame_effect_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_frame() {
+        use super::Frame;
+
+        let frame_pairs = vec![
+            ("\"1993\"", Frame::Year1993),
+            ("\"1997\"", Frame::Year1997),
+            ("\"2003\"", Frame::Year2003),
+            ("\"2015\"", Frame::Year2015),
+            ("\"future\"", Frame::Future),
+        ];
+
+        for frame_pair in frame_pairs {
+            let val: Frame = serde_json::from_str(frame_pair.0).unwrap();
+            assert_eq!(frame_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_game() {
+        use super::Game;
+
+        let game_pairs = vec![
+            ("\"paper\"", Game::Paper),
+            ("\"arena\"", Game::Arena),
+            ("\"mtgo\"", Game::Mtgo),
+        ];
+
+        for game_pair in game_pairs {
+            let val: Game = serde_json::from_str(game_pair.0).unwrap();
+            assert_eq!(game_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_rarity() {
+        use super::Rarity;
+
+        let rarity_pairs = vec![
+            ("\"common\"", Rarity::Common),
+            ("\"uncommon\"", Rarity::Uncommon),
+            ("\"rare\"", Rarity::Rare),
+            ("\"mythic\"", Rarity::Mythic),
+        ];
+
+        for rarity_pair in rarity_pairs {
+            let val: Rarity = serde_json::from_str(rarity_pair.0).unwrap();
+            assert_eq!(rarity_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_legality() {
+        use super::Legality;
+
+        let legality_pair = vec![
+            ("\"not_legal\"", Legality::NotLegal),
+            ("\"legal\"", Legality::Legal),
+            ("\"banned\"", Legality::Banned),
+            ("\"restricted\"", Legality::Restricted),
+        ];
+
+        for legality_pair in legality_pair {
+            let val: Legality = serde_json::from_str(legality_pair.0).unwrap();
+            assert_eq!(legality_pair.1, val);
+        }
+    }
+
+    #[test]
+    fn test_card_face() {}
+
+    #[test]
+    fn test_related_card() {}
+
+    #[test]
+    fn test_legalities() {}
+
+    #[test]
+    fn test_image_uris() {
+        use super::ImageUris;
+        use super::Uri;
+        use http;
+
+        let target_image_uris = ImageUris {
+            small: Some(Uri("https://testuri.com/path/1"
+                .parse::<http::Uri>()
+                .unwrap())),
+            normal: Some(Uri("https://testuri.com/path/2"
+                .parse::<http::Uri>()
+                .unwrap())),
+            large: Some(Uri("https://testuri.com/path/3"
+                .parse::<http::Uri>()
+                .unwrap())),
+            png: None,
+            art_crop: None,
+            border_crop: None,
+        };
+
+        let image_uris: ImageUris = serde_json::from_str(
+            r#"
+            {
+                "small": "https://testuri.com/path/1",
+                "normal": "https://testuri.com/path/2",
+                "large": "https://testuri.com/path/3"
+            }
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(target_image_uris, image_uris);
+    }
+
+    #[test]
+    fn test_prices() {
+        use super::Price;
+        use super::Prices;
+
+        let target_prices = Prices {
+            usd: Some(Price(15.44)),
+            usd_foil: Some(Price(37.12)),
+            eur: None,
+            tix: None,
+        };
+
+        let prices = serde_json::from_str(
+            r#"
+            {
+                "usd": "15.44",
+                "usd_foil": "37.12"
+            }
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(target_prices, prices);
+    }
+
+    #[test]
+    fn test_purchase_uris() {
+        use super::PurchaseUris;
+        use super::Uri;
+        use http;
+
+        let target_purchase_uris = PurchaseUris {
+            tcgplayer: Some(Uri("https://testuri.com/path/1"
+                .parse::<http::Uri>()
+                .unwrap())),
+            cardmarket: None,
+            cardhoarder: None,
+        };
+
+        let purchase_uris = serde_json::from_str(
+            r#"
+            {
+                "tcgplayer": "https://testuri.com/path/1"
+            }
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(target_purchase_uris, purchase_uris);
+    }
+
+    #[test]
+    fn test_related_uris() {
+        use super::RelatedUris;
+        use super::Uri;
+        use http;
+
+        let target_related_uris = RelatedUris {
+            tcgplayer_decks: Some(Uri("https://testuri.com/path/1"
+                .parse::<http::Uri>()
+                .unwrap())),
+            edhrec: None,
+            mtgtop8: None,
+        };
+
+        let related_uris = serde_json::from_str(
+            r#"
+            {
+                "tcgplayer_decks": "https://testuri.com/path/1"
+            }
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(target_related_uris, related_uris);
+    }
 }
