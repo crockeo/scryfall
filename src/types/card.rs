@@ -1,10 +1,12 @@
+use super::uri::Uri;
 use super::uuid::Uuid;
-use http::Uri;
+use serde::Deserialize;
 use std::collections::HashSet;
 use std::time::SystemTime;
 
 /// Possible colors that a card can be. Note that cards who do not have a color are not automatically colorless, e.g.
 /// conspiracies.
+#[derive(Deserialize, Eq, Hash, PartialEq)]
 pub enum Color {
     White,
     Blue,
@@ -15,6 +17,7 @@ pub enum Color {
 }
 
 /// The kind of card, e.g. normal / split / etc.
+#[derive(Deserialize)]
 pub enum Layout {
     Normal,
     Split,
@@ -34,6 +37,7 @@ pub enum Layout {
 }
 
 /// Frame effects that are applied over the primary Frame kinds.
+#[derive(Deserialize)]
 pub enum FrameEffect {
     Legendary,
     Miracle,
@@ -49,6 +53,7 @@ pub enum FrameEffect {
 }
 
 /// Main Frame kind, e.g. '93, '97, etc.
+#[derive(Deserialize)]
 pub enum Frame {
     Year1993,
     Year1997,
@@ -58,6 +63,7 @@ pub enum Frame {
 }
 
 /// The different kinds of MTG this can be played on. E.g. paper MTG, Arena, and MTG online.
+#[derive(Deserialize)]
 pub enum Game {
     Paper,
     Arena,
@@ -65,6 +71,7 @@ pub enum Game {
 }
 
 /// Rarity levels that a card can be.
+#[derive(Deserialize)]
 pub enum Rarity {
     Common,
     Uncommon,
@@ -73,6 +80,7 @@ pub enum Rarity {
 }
 
 /// The legality status of this card in different formats.
+#[derive(Deserialize)]
 pub enum Legality {
     NotLegal,
     Legal,
@@ -81,6 +89,7 @@ pub enum Legality {
 }
 
 /// Primary card object
+#[derive(Deserialize)]
 pub struct Card {
     /// This card’s Arena ID, if any. A large percentage of cards are not available on Arena and do not have this ID.
     pub arena_id: Option<u32>,
@@ -301,6 +310,7 @@ pub struct Card {
 }
 
 /// Card face object, used within the card object in the card_faces field.
+#[derive(Deserialize)]
 pub struct CardFace {
     /// The name of the illustrator of this card face. Newly spoiled cards may not have this field yet.
     pub artist: Option<String>,
@@ -358,6 +368,7 @@ pub struct CardFace {
 }
 
 /// Related card object, used within the card object in the all_parts field.
+#[derive(Deserialize)]
 pub struct RelatedCard {
     /// An unique ID for this card in Scryfall’s database.
     pub id: Uuid,
@@ -377,6 +388,7 @@ pub struct RelatedCard {
 }
 
 /// Contains legalities for this card in each format.
+#[derive(Deserialize)]
 pub struct Legalities {
     pub standard: Legality,
     pub future: Legality,
@@ -392,6 +404,7 @@ pub struct Legalities {
 }
 
 /// Contains all of the possible URIs for each kind of image Scryfall stores.
+#[derive(Deserialize)]
 pub struct ImageUris {
     pub small: Option<Uri>,
     pub normal: Option<Uri>,
@@ -402,6 +415,7 @@ pub struct ImageUris {
 }
 
 /// Contains prices in different markets for this card.
+#[derive(Deserialize)]
 pub struct Prices {
     pub usd: Option<f64>,
     pub usb_foil: Option<f64>,
@@ -410,6 +424,7 @@ pub struct Prices {
 }
 
 /// Contains URIs to this card on sites where you can purchase this card
+#[derive(Deserialize)]
 pub struct PurchaseUris {
     pub tcgplayer: Option<Uri>,
     pub cardmarket: Option<Uri>,
@@ -417,6 +432,7 @@ pub struct PurchaseUris {
 }
 
 /// Contains URIs to this card on related sites.
+#[derive(Deserialize)]
 pub struct RelatedUris {
     pub tcgplayer_decks: Option<Uri>,
     pub edhrec: Option<Uri>,

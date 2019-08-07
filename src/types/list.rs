@@ -1,8 +1,10 @@
 use super::card::Card;
 use super::set::Set;
-use http::Uri;
+use super::uri::Uri;
+use serde::Deserialize;
 
 /// A type-generic List object
+#[derive(Deserialize)]
 pub struct List<T> {
     /// An array of the requested objects, in a specific order.
     pub data: Vec<T>,

@@ -1,8 +1,10 @@
+use super::uri::Uri;
 use super::uuid::Uuid;
-use http::Uri;
+use serde::Deserialize;
 use std::time::SystemTime;
 
 /// Set objects
+#[derive(Deserialize)]
 pub struct Set {
     /// A unique ID for this set on Scryfall that will not change.
     pub id: Uuid,
@@ -58,6 +60,7 @@ pub struct Set {
     pub search_uri: Uri,
 }
 
+#[derive(Deserialize)]
 pub enum SetType {
     Core,
     Expansion,

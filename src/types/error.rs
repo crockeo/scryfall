@@ -1,4 +1,7 @@
+use serde::Deserialize;
+
 /// The error object that accompanies a 4xx or a 5xx from the server.
+#[derive(Deserialize)]
 pub struct Error {
     /// An integer HTTP status code for this error.
     pub error: u16,
